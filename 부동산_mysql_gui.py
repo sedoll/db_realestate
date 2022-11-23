@@ -9,32 +9,40 @@ values = ['', '두정동', '백석동', '성거읍', '구성동', '다가동', '
 d = {'': [''],
     '성거읍': ['문덕리', '신월리'],
     '목천읍': ['삼성리', '서리'],}
-
+dong = ''
 def changeDong():
-    container1.readonly_combobox2["values"] = d[container1.readonly_combobox1.get()]
+    dong = str(container1.readonly_combobox1.get())
+    print(dong)
+    # container1.readonly_combobox2["values"] = d[container1.readonly_combobox1.get()]
 
 def selectData():
-    data1, data2, data3, data4 = [], [], [], []
+    data1, data2, data3, data4, data5 = [], [], [], [], []
     sql = ''
     
-    conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='real_estate', charset='utf8')
+    conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='test_db', charset='utf8')
     cur = conn.cursor()
     
-    sql = f"SELECT 시군구, 번지, 본번, 부번 FROM city"
-    cur.execute(sql)
+    sql = "SELECT 단지명, 번지, 매매전월세구분, 거래금액, 전용면적 FROM 아파트실거래가 WHERE 읍면동 IN (%s) LIMIT 20"
+    cur.execute(sql, (container1.readonly_combobox1.get()))
     
     while True:
         row = cur.fetchone()
         if row == None:
             break
-        data1.append(row[0]); data2.append(row[1]); data3.append(row[2]); data4.append(row[3])
+        data1.append(row[0]); data2.append(row[1]); data3.append(row[2]); data4.append(row[3]); data5.append(row[4])
         
-    listData1.delete(0, listData1.size()-1); listData2.delete(0, listData2.size()-1)
-    listData3.delete(0, listData3.size()-1); listData4.delete(0, listData4.size()-1)
+    listData1.delete(0, listData1.size()-1)
+    listData2.delete(0, listData2.size()-1)
+    listData3.delete(0, listData3.size()-1)
+    listData4.delete(0, listData4.size()-1)
+    listData5.delete(0, listData5.size()-1)
     
-    for i1, i2, i3, i4 in zip(data1, data2, data3, data4):
-        listData1.insert(END, i1); listData2.insert(END, i2)
-        listData3.insert(END, i3); listData4.insert(END, i4)
+    for i1, i2, i3, i4, i5 in zip(data1, data2, data3, data4, data5):
+        listData1.insert(END, i1)
+        listData2.insert(END, i2)
+        listData3.insert(END, i3)
+        listData4.insert(END, i4)
+        listData5.insert(END, i5)
         
     conn.close()
 
@@ -72,6 +80,9 @@ class Cont1:
         self.label6.pack(side=LEFT)
         self.edt6 = Entry(self.inframe, width=10)
         self.edt6.pack(side=LEFT, padx=10, pady=10)
+        
+        self.btn = Button(self.inframe, text='조회', command=selectData)
+        self.btn.pack(side=LEFT, padx=5, pady=10)
 
 root = Tk()
 root.geometry('1000x500')
@@ -90,12 +101,14 @@ container1 = Cont1(edtFrame)
 
 label1 = Label(labelFrame, text='아파트이름')
 label1.pack(side=LEFT, fill=BOTH, expand=1)
-label2 = Label(labelFrame, text='가격')
+label2 = Label(labelFrame, text='주소')
 label2.pack(side=LEFT, fill=BOTH, expand=1)
-label3 = Label(labelFrame, text='건축연도')
+label3 = Label(labelFrame, text='매매전월세')
 label3.pack(side=LEFT, fill=BOTH, expand=1)
-label4 = Label(labelFrame, text='근처역')
+label4 = Label(labelFrame, text='거래금액')
 label4.pack(side=LEFT, fill=BOTH, expand=1)
+label5 = Label(labelFrame, text='면적')
+label5.pack(side=LEFT, fill=BOTH, expand=1)
 
 listData1 = Listbox(listFrame, bg='#AAAAAA')
 listData1.pack(side=LEFT, fill=BOTH, expand=1)
@@ -105,5 +118,7 @@ listData3 = Listbox(listFrame, bg='#AAAAAA')
 listData3.pack(side=LEFT, fill=BOTH, expand=1)
 listData4 = Listbox(listFrame, bg='#AAAAAA')
 listData4.pack(side=LEFT, fill=BOTH, expand=1)
+listData5 = Listbox(listFrame, bg='#AAAAAA')
+listData5.pack(side=LEFT, fill=BOTH, expand=1)
 
 root.mainloop()
