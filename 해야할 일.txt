@@ -1,1 +1,22 @@
-나중에 컬럼들을 영어로 바꾸기
+서북구 역세권 지역
+두정동, 성거읍 신월리, 성정동, 성환읍 성환리, 쌍용동, 와촌동
+
+서북구 역 이름
+두정역, 성환역, 쌍용역, 직산역, 천안역
+
+dong -> 읍면동리
+address -> 주소
+par_add -> 본번
+sub_add -> 부번
+name -> 단지명
+deal -> 매매 전세 월세
+area -> 면적
+month -> 계약 월
+day -> 계약 일
+acount -> 매매, 전세, 보증금(월세)
+rent -> 월세
+floor -> 계약 층
+year -> 건축연도
+cancellation -> 계약취소일
+property -> 거래 유형
+station_area -> 역세권
