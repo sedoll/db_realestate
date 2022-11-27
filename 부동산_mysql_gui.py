@@ -1,11 +1,13 @@
 # GUI를 활용한 부동산 가격 조회
 
-import pymysql
+from math import *
 from tkinter import *
 import tkinter.ttk as ttk
+import pymysql
 
-values = ['', '두정동', '백석동', '성거읍', '구성동', '다가동', '목천읍', '전체']
 
+values = ['', '두정동', '백석동', '불당동', '성거읍', '성성동', '성정동', '신당동', '쌍용동', '와촌동', '차암동', '전체']
+space = 30
 d = {'': [''],
     '성거읍': ['문덕리', '신월리'],
     '목천읍': ['삼성리', '서리'],}
@@ -16,33 +18,33 @@ def changeDong():
     # container1.readonly_combobox2["values"] = d[container1.readonly_combobox1.get()]
 
 def selectData():
-    data1, data2, data3, data4, data5 = [], [], [], [], []
+    data1, data2, data3, data4, data5, data6 = [], [], [], [], [], []
     sql = ''
     
-    conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='test_db', charset='utf8')
+    conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='estate', charset='utf8')
     cur = conn.cursor()
     
-    sql = "SELECT 단지명, 번지, 매매전월세구분, 거래금액, 전용면적 FROM 아파트실거래가 WHERE 읍면동 IN (%s) LIMIT 20"
+    sql = "SELECT name, dong, address, deal, acount, area FROM apt WHERE dong = %s LIMIT 20"
     cur.execute(sql, (container1.readonly_combobox1.get()))
     
     while True:
         row = cur.fetchone()
         if row == None:
             break
-        data1.append(row[0]); data2.append(row[1]); data3.append(row[2]); data4.append(row[3]); data5.append(row[4])
+        data1.append(row[0]); data2.append(row[1]); data3.append(row[2]); data4.append(row[3]); data5.append(row[4]); data6.append(row[5])
         
     listData1.delete(0, listData1.size()-1)
-    listData2.delete(0, listData2.size()-1)
-    listData3.delete(0, listData3.size()-1)
-    listData4.delete(0, listData4.size()-1)
-    listData5.delete(0, listData5.size()-1)
+    # listData2.delete(0, listData2.size()-1)
+    # listData3.delete(0, listData3.size()-1)
+    # listData4.delete(0, listData4.size()-1)
+    # listData5.delete(0, listData5.size()-1)
     
-    for i1, i2, i3, i4, i5 in zip(data1, data2, data3, data4, data5):
-        listData1.insert(END, i1)
-        listData2.insert(END, i2)
-        listData3.insert(END, i3)
-        listData4.insert(END, i4)
-        listData5.insert(END, i5)
+    for i1, i2, i3, i4, i5, i6 in zip(data1, data2, data3, data4, data5, data6):
+        listData1.insert(0, str(i1).ljust(space) + str(i2).center(space) + str(i3).center(space) + str(i4).center(space) + str(i5).rjust(space) + str(int(ceil(i6) / 3.3)).rjust(space))
+        # listData2.insert(END, i2)
+        # listData3.insert(END, i3)
+        # listData4.insert(END, i4)
+        # listData5.insert(END, i5)
         
     conn.close()
 
@@ -112,13 +114,13 @@ label5.pack(side=LEFT, fill=BOTH, expand=1)
 
 listData1 = Listbox(listFrame, bg='#AAAAAA')
 listData1.pack(side=LEFT, fill=BOTH, expand=1)
-listData2 = Listbox(listFrame, bg='#AAAAAA')
-listData2.pack(side=LEFT, fill=BOTH, expand=1)
-listData3 = Listbox(listFrame, bg='#AAAAAA')
-listData3.pack(side=LEFT, fill=BOTH, expand=1)
-listData4 = Listbox(listFrame, bg='#AAAAAA')
-listData4.pack(side=LEFT, fill=BOTH, expand=1)
-listData5 = Listbox(listFrame, bg='#AAAAAA')
-listData5.pack(side=LEFT, fill=BOTH, expand=1)
+# listData2 = Listbox(listFrame, bg='#AAAAAA')
+# listData2.pack(side=LEFT, fill=BOTH, expand=1)
+# listData3 = Listbox(listFrame, bg='#AAAAAA')
+# listData3.pack(side=LEFT, fill=BOTH, expand=1)
+# listData4 = Listbox(listFrame, bg='#AAAAAA')
+# listData4.pack(side=LEFT, fill=BOTH, expand=1)
+# listData5 = Listbox(listFrame, bg='#AAAAAA')
+# listData5.pack(side=LEFT, fill=BOTH, expand=1)
 
 root.mainloop()
