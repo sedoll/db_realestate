@@ -8,23 +8,39 @@ import pymysql
 
 values = ['', '두정동', '백석동', '불당동', '성거읍', '성성동', '성정동', '신당동', '쌍용동', '와촌동', '차암동', '전체']
 space = 30
-d = {'': [''],
-    '성거읍': ['문덕리', '신월리'],
-    '목천읍': ['삼성리', '서리'],}
+sql = 'SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s LIMIT 20'
 dong = ''
 def changeDong():
     dong = str(container1.readonly_combobox1.get())
     print(dong)
     # container1.readonly_combobox2["values"] = d[container1.readonly_combobox1.get()]
 
+# 비 역세권 고가순
+def desc():
+    global sql
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area = '' ORDER BY acount DESC LIMIT 20"
+
+# 비 역세권 저가순
+def asc():
+    global sql
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area = '' ORDER BY acount LIMIT 20"
+
+# 역세권 고가 순
+def station_desc():
+    global sql
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area != '' ORDER BY acount DESC  LIMIT 20"
+
+# 역세권 저가 순
+def station_asc():
+    global sql
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area != '' ORDER BY acount LIMIT 20"
+
 def selectData():
     data1, data2, data3, data4, data5, data6 = [], [], [], [], [], []
-    sql = ''
     
     conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='estate', charset='utf8')
     cur = conn.cursor()
     
-    sql = "SELECT name, dong, address, deal, acount, area FROM apt WHERE dong = %s LIMIT 20"
     cur.execute(sql, (container1.readonly_combobox1.get()))
     
     while True:
@@ -40,7 +56,7 @@ def selectData():
     # listData5.delete(0, listData5.size()-1)
     
     for i1, i2, i3, i4, i5, i6 in zip(data1, data2, data3, data4, data5, data6):
-        listData1.insert(0, str(i1).ljust(space) + str(i2).center(space) + str(i3).center(space) + str(i4).center(space) + str(i5).rjust(space) + str(int(ceil(i6) / 3.3)).rjust(space))
+        listData1.insert(END, str(i1).ljust(space) + str(i2).center(space) + str(i3).center(space) + str(i4).center(space) + str(i5).rjust(space) + str(int(ceil(i6) / 3.3)).rjust(space))
         # listData2.insert(END, i2)
         # listData3.insert(END, i3)
         # listData4.insert(END, i4)
@@ -61,34 +77,25 @@ class Cont1:
         self.readonly_combobox1.pack(side=LEFT)
         self.btnGu = Button(self.inframe, text='선택', command=changeDong)
         self.btnGu.pack(side=LEFT, padx=5, pady=10)
-
-        self.label2 = Label(self.inframe, width=5, text='리')
-        self.label2.pack(side=LEFT)
-        self.readonly_combobox2 = ttk.Combobox(self.inframe, width=5, values=d[self.readonly_combobox1.get()], state='readonly')
-        self.readonly_combobox2.current(0) # 0번째 인덱스값 선택
-        self.readonly_combobox2.pack(side=LEFT)
-
-        self.label4 = Label(self.inframe, width=5, text='번지')
-        self.label4.pack(side=LEFT)
-        self.edt4 = Entry(self.inframe, width=10)
-        self.edt4.pack(side=LEFT, padx=10, pady=10)
         
-        self.label5 = Label(self.inframe, width=5, text='본번')
-        self.label5.pack(side=LEFT)
-        self.edt5 = Entry(self.inframe, width=10)
-        self.edt5.pack(side=LEFT, padx=10, pady=10)
+        self.btn = Button(self.inframe, text='비역세권 저가', command=asc)
+        self.btn.pack(side=LEFT, padx=5, pady=10)
         
-        self.label6 = Label(self.inframe, width=5, text='부번')
-        self.label6.pack(side=LEFT)
-        self.edt6 = Entry(self.inframe, width=10)
-        self.edt6.pack(side=LEFT, padx=10, pady=10)
+        self.btn = Button(self.inframe, text='비역세권 고가', command=desc)
+        self.btn.pack(side=LEFT, padx=5, pady=10)
+        
+        self.btn = Button(self.inframe, text='역세권 고가', command=station_desc)
+        self.btn.pack(side=LEFT, padx=5, pady=10)
+        
+        self.btn = Button(self.inframe, text='역세권 저가', command=station_asc)
+        self.btn.pack(side=LEFT, padx=5, pady=10)
         
         self.btn = Button(self.inframe, text='조회', command=selectData)
         self.btn.pack(side=LEFT, padx=5, pady=10)
 
 root = Tk()
 root.geometry('1000x500')
-root.title('천안시 부동산 거래가 확인 프로그램')
+root.title('천안시 서북구 부동산 거래가 확인 프로그램')
 root.resizable(False, False)
 
 edtFrame = Frame(root)
