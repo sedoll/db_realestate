@@ -6,7 +6,7 @@ import tkinter.ttk as ttk
 import pymysql
 
 
-values = ['', '두정동', '백석동', '불당동', '성거읍', '성성동', '성정동', '신당동', '쌍용동', '와촌동', '차암동', '전체']
+values = ['두정동', '백석동', '불당동', '성거읍', '성성동', '성정동', '성환읍', '신당동', '쌍용동', '와촌동', '입장면', '직산읍', '차암동', '전체']
 space = 30
 sql = 'SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s LIMIT 20'
 dong = ''
@@ -18,22 +18,22 @@ def changeDong():
 # 비 역세권 고가순
 def desc():
     global sql
-    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area = '' ORDER BY acount DESC LIMIT 20"
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong LIKE %s AND station_area = '' ORDER BY acount DESC LIMIT 20"
 
 # 비 역세권 저가순
 def asc():
     global sql
-    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area = '' ORDER BY acount LIMIT 20"
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong LIKE %s AND station_area = '' ORDER BY acount LIMIT 20"
 
 # 역세권 고가 순
 def station_desc():
     global sql
-    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area != '' ORDER BY acount DESC  LIMIT 20"
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong LIKE %s AND station_area != '' ORDER BY acount DESC  LIMIT 20"
 
 # 역세권 저가 순
 def station_asc():
     global sql
-    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong = %s AND station_area != '' ORDER BY acount LIMIT 20"
+    sql = "SELECT name, dong, address, deal, acount, area FROM trade_view WHERE dong LIKE %s AND station_area != '' ORDER BY acount LIMIT 20"
 
 def selectData():
     data1, data2, data3, data4, data5, data6 = [], [], [], [], [], []
@@ -41,7 +41,11 @@ def selectData():
     conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='0000', db='estate', charset='utf8')
     cur = conn.cursor()
     
-    cur.execute(sql, (container1.readonly_combobox1.get()))
+    search = container1.readonly_combobox1.get()
+    if search != '전체':
+        cur.execute(sql, (search + '%'))
+    else:
+        cur.execute("SELECT name, dong, address, deal, acount, area FROM trade_view ORDER BY acount DESC LIMIT 20")
     
     while True:
         row = cur.fetchone()

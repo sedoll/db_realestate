@@ -97,5 +97,9 @@ SELECT count(*) FROM charter_view;
 
 -- 월세 아파트 중에서 역세권인 경우
 SELECT * FROM charter_view
-	WHERE station_area != ''
+	WHERE station_area != '' AND acount <= 10000
     ORDER BY acount DESC;
+    
+-- 읍 지역 검색
+SELECT * FROM trade_view
+	WHERE dong LIKE '입장면%';
