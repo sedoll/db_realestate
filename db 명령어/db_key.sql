@@ -37,8 +37,9 @@ SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, a.station_ar
     LIMIT 10;
     
 -- 뷰 생성
+DROP VIEW  if exists trade_view;
 CREATE VIEW trade_view AS
-SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, a.station_area
+SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, b.rent, b.month, b.floor, a.station_area
 	FROM complex a JOIN trade b
 	ON a.address = b.address AND a.name = b.name;
     
@@ -66,8 +67,9 @@ ALTER TABLE rent modify address varchar(30);
 ALTER TABLE rent ADD FOREIGN KEY (address, name, floor, area) REFERENCES apartment(address, name, floor, area);
 
 -- 뷰 생성
+DROP VIEW  if exists rent_view;
 CREATE VIEW rent_view AS
-SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, b.rent, a.station_area
+SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, b.rent, b.month, b.floor, a.station_area
 	FROM complex a JOIN rent b
 	ON a.address = b.address AND a.name = b.name;
     
@@ -87,8 +89,9 @@ ALTER TABLE charter modify address varchar(30);
 ALTER TABLE charter ADD FOREIGN KEY (address, name, floor, area) REFERENCES apartment(address, name, floor, area);
 
 -- 뷰 생성
+DROP VIEW  if exists charter_view;
 CREATE VIEW charter_view AS
-SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, a.station_area
+SELECT a.dong, a.address, a.name, a.year, b.deal, b.area, b.acount, b.rent, b.month, b.floor, a.station_area
 	FROM complex a JOIN charter b
 	ON a.address = b.address AND a.name = b.name;
     
@@ -103,3 +106,17 @@ SELECT * FROM charter_view
 -- 읍 지역 검색
 SELECT * FROM trade_view
 	WHERE dong LIKE '입장면%';
+
+-- 모든 뷰 합치기
+DROP VIEW  if exists all_view;
+CREATE VIEW all_view AS 
+	SELECT * FROM trade_view
+    UNION ALL
+    SELECT * FROM charter_view
+    UNION ALL
+    SELECT * FROM rent_view;
+
+SELECT count(*) FROM all_view;
+
+SELECT * FROM all_view
+	WHERE deal IN('매매', '전세', '월세') AND acount BETWEEN 20000 AND 30000 AND month BETWEEN 1 AND 5 AND floor BETWEEN 1 AND 10 AND station_area != '' ORDER BY acount LIMIT 100;
